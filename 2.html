@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencarian Kode Pos Indonesia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f6fa;
+            color: #333;
+        }
+        header {
+            background-color: #0d2647;
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            font-size: 1.8rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            margin: 2rem auto;
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #000000;
+            margin-bottom: 1.5rem;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        select, button {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        button {
+            background-color:#0d2e58;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #436ca1;
+        }
+        #output {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #dfdfdf;
+            border: 1px solid #8f8f8f;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <header>Pencarian Kode Pos Indonesia</header>
+    <div class="container">
+        <h2>Masukkan Data Wilayah</h2>
+        <label for="provinsi">Provinsi</label>
+        <select id="provinsi" onchange="updateKabupaten()">
+            <option value="">Pilih Provinsi</option>
+            <option value="Jawa Timur">Jawa Timur</option>
+            <option value="DKI Jakarta">DKI Jakarta</option>
+            <option value="Jawa Barat">Jawa Barat</option>
+            <option value="Bali">Bali</option>
+            <option value="Sumatera Utara">Sumatera Utara</option>
+            <option value="Sumatera Selatan">Sumatera Selatan</option>
+            <option value="Yogyakarta">Yogyakarta</option>
+            <option value="Kalimantan Timur">Kalimantan Timur</option>
+            <option value="Sulawesi Selatan">Sulawesi Selatan</option>
+            <option value="Riau">Riau</option>
+        </select>
+
+        <label for="kabupaten">Kabupaten/Kota</label>
+        <select id="kabupaten" onchange="updateKecamatan()">
+            <option value="">Pilih Kabupaten/Kota</option>
+        </select>
+
+        <label for="kecamatan">Kecamatan</label>
+        <select id="kecamatan">
+            <option value="">Pilih Kecamatan</option>
+        </select>
+
+        <button onclick="cariKodePos()">Cari Kode Pos</button>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const dataKodePos = {
+            "Jawa Timur": {
+                "Surabaya": {
+                    "Kepuh": "60111",
+                    "Tandes": "60122",
+                    "Wonokromo": "60243"
+                },
+                "Malang": {
+                    "Lowokwaru": "65141",
+                    "Blimbing": "65126",
+                    "Klojen": "65111"
+                },
+                "Sidoarjo": {
+                    "Taman": "61257",
+                    "Waru": "61256",
+                    "Gedangan": "61254"
+                }
+            },
+            "Jawa Barat": {
+                "Bandung": {
+                    "Cicendo": "40172",
+                    "Coblong": "40132",
+                    "Lengkong": "40261"
+                },
+                "Bekasi": {
+                    "Bekasi Timur": "17113",
+                    "Bekasi Utara": "17121",
+                    "Medan Satria": "17132"
+                },
+                "Depok": {
+                    "Beji": "16421",
+                    "Cimanggis": "16451",
+                    "Sukmajaya": "16412"
+                }
+            },
+            "DKI Jakarta": {
+                "Jakarta Pusat": {
+                    "Gambir": "10110",
+                    "Senen": "10410",
+                    "Cempaka Putih": "10510"
+                },
+                "Jakarta Timur": {
+                    "Matraman": "13150",
+                    "Pulo Gadung": "13210",
+                    "Jatinegara": "13310"
+                },
+                "Jakarta Selatan": {
+                    "Kebayoran Lama": "12240",
+                    "Pasar Minggu": "12520",
+                    "Tebet": "12810"
+                }
+            },
+            "Bali": {
+                "Denpasar": {
+                    "Denpasar Selatan": "80221",
+                    "Denpasar Utara": "80231",
+                    "Denpasar Timur": "80237"
+                },
+                "Badung": {
+                    "Kuta": "80361",
+                    "Mengwi": "80351",
+                    "Abiansemal": "80352"
+                },
+                "Gianyar": {
+                    "Ubud": "80571",
+                    "Blahbatuh": "80581",
+                    "Sukawati": "80582"
+                }
+            },
+            "Sumatera Utara": {
+                "Medan": {
+                    "Medan Barat": "20111",
+                    "Medan Timur": "20212",
+                    "Medan Johor": "20144"
+                },
+                "Binjai": {
+                    "Binjai Kota": "20711",
+                    "Binjai Timur": "20731",
+                    "Binjai Utara": "20762"
+                }
+            },
+            "Sumatera Selatan": {
+                "Palembang": {
+                    "Seberang Ulu": "30251",
+                    "Ilir Barat": "30111",
+                    "Sako": "30961"
+                },
+                "Lubuklinggau": {
+                    "Lubuklinggau Barat": "31611",
+                    "Lubuklinggau Timur": "31612",
+                    "Lubuklinggau Utara": "31613"
+                }
+            },
+            "Yogyakarta": {
+                "Sleman": {
+                    "Gamping": "55291",
+                    "Depok": "55281",
+                    "Ngaglik": "55581"
+                },
+                "Bantul": {
+                    "Sewon": "55711",
+                    "Pundong": "55751",
+                    "Jetis": "55781"
+                }
+            },
+            "Kalimantan Timur": {
+                "Samarinda": {
+                    "Samarinda Ulu": "75124",
+                    "Samarinda Ilir": "75121",
+                    "Samarinda Seberang": "75131"
+                },
+                "Balikpapan": {
+                    "Balikpapan Utara": "76125",
+                    "Balikpapan Selatan": "76115",
+                    "Balikpapan Kota": "76111"
+                }
+            },
+            "Sulawesi Selatan": {
+                "Makassar": {
+                    "Tamalanrea": "90245",
+                    "Panakkukang": "90232",
+                    "Ujung Pandang": "90111"
+                },
+                "Parepare": {
+                    "Ujung": "91111",
+                    "Soreang": "91131",
+                    "Bacukiki": "91121"
+                }
+            },
+            "Riau": {
+                "Pekanbaru": {
+                    "Marpoyan Damai": "28282",
+                    "Payung Sekaki": "28291",
+                    "Bukit Raya": "28281"
+                },
+                "Dumai": {
+                    "Dumai Kota": "28811",
+                    "Bukit Kapur": "28826",
+                    "Dumai Timur": "28821"
+                }
+            }
+        };
+
+
+        function updateKabupaten() {
+            const provinsi = document.getElementById("provinsi").value;
+            const kabupatenDropdown = document.getElementById("kabupaten");
+            const kecamatanDropdown = document.getElementById("kecamatan");
+
+            kabupatenDropdown.innerHTML = `<option value="">Pilih Kabupaten/Kota</option>`;
+            kecamatanDropdown.innerHTML = `<option value="">Pilih Kecamatan</option>`;
+
+            if (provinsi && dataKodePos[provinsi]) {
+                for (const kabupaten in dataKodePos[provinsi]) {
+                    kabupatenDropdown.innerHTML += `<option value="${kabupaten}">${kabupaten}</option>`;
+                }
+            }
+        }
+
+        function updateKecamatan() {
+            const provinsi = document.getElementById("provinsi").value;
+            const kabupaten = document.getElementById("kabupaten").value;
+            const kecamatanDropdown = document.getElementById("kecamatan");
+
+            kecamatanDropdown.innerHTML = `<option value="">Pilih Kecamatan</option>`;
+
+            if (provinsi && kabupaten && dataKodePos[provinsi][kabupaten]) {
+                for (const kecamatan in dataKodePos[provinsi][kabupaten]) {
+                    kecamatanDropdown.innerHTML += `<option value="${kecamatan}">${kecamatan}</option>`;
+                }
+            }
+        }
+
+        function cariKodePos() {
+            const provinsi = document.getElementById("provinsi").value;
+            const kabupaten = document.getElementById("kabupaten").value;
+            const kecamatan = document.getElementById("kecamatan").value;
+            const outputDiv = document.getElementById("output");
+
+            if (provinsi && kabupaten && kecamatan) {
+                const kodePos = dataKodePos[provinsi][kabupaten][kecamatan];
+                outputDiv.innerHTML = `<strong>Hasil Pencarian:</strong><br>
+                    Provinsi: ${provinsi}<br>
+                    Kabupaten/Kota: ${kabupaten}<br>
+                    Kecamatan: ${kecamatan}<br>
+                    Kode Pos: <strong>${kodePos}</strong>`;
+            } else {
+                outputDiv.innerHTML = `<strong style="color:red;">Harap lengkapi semua pilihan!</strong>`;
+            }
+        }
+    </script>
+</body>
+</html>
